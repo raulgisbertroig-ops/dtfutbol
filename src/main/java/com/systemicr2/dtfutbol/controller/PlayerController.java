@@ -22,14 +22,16 @@ public class PlayerController {
     // CREATE
     @PostMapping
     public ResponseEntity<Player> createPlayer(@Valid @RequestBody Player player) {
-        Player savedPlayer = playerService.savePlayer(player);
+        Player savedPlayer = playerService.createPlayer(player);
         return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
     }
 
     // READ (Todos)
     @GetMapping
     public ResponseEntity<List<Player>> getAllPlayers() {
-        return new ResponseEntity<>(playerService.getAllPlayers(), HttpStatus.OK);
+        // Asumo que ya tienes el método getAllPlayers() en tu PlayerService
+        List<Player> players = playerService.getAllPlayers();
+        return new ResponseEntity<>(players, HttpStatus.OK);
     }
 
     // READ (Por ID)
@@ -38,12 +40,17 @@ public class PlayerController {
         return new ResponseEntity<>(playerService.getPlayerById(id), HttpStatus.OK);
     }
 
+    @GetMapping("/team/{teamId}")
+    public ResponseEntity<List<Player>> getPlayersByTeam(@PathVariable Long teamId) {
+        return new ResponseEntity<>(playerService.getPlayersByTeam(teamId), HttpStatus.OK);
+    }
+
     // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<Player> updatePlayer(@PathVariable Long id, @RequestBody Player playerDetails) {
         return new ResponseEntity<>(playerService.updatePlayer(id, playerDetails), HttpStatus.OK);
-    }
 
+    }
     // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlayer(@PathVariable Long id) {

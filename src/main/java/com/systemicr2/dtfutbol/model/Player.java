@@ -1,5 +1,6 @@
 package com.systemicr2.dtfutbol.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -27,7 +28,12 @@ public class Player {
     @Min(value=1, message="Camiseta > 0")
     private Integer shirtNumber;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // ... tus otros campos (id, name, position, etc)
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "team_id")
+
     private Team team;
+
+    // ... getters y setters actualizados
     }
