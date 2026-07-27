@@ -31,4 +31,11 @@ public class TeamService {
     public List<Team> getAllTeams() {
         return teamRepository.findAll();
     }
+
+    public Team updateTeam(Long id, Team teamDetails) {
+        Team team = teamRepository.findById(id).orElseThrow();
+        team.setBudget(teamDetails.getBudget());
+        return teamRepository.save(team);
+
+    }
 }

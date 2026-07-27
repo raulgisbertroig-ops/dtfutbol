@@ -30,6 +30,8 @@ public class Player {
 
     // ... tus otros campos (id, name, position, etc)
 
+    private Double marketValue;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "team_id")
 

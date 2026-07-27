@@ -16,4 +16,7 @@ public class Team {
     @NotBlank(message = "El nombre del equipo es obligatorio")
     @Column(nullable = false, unique = true)
     private String name;
+
+    private Double budget;
+
 }

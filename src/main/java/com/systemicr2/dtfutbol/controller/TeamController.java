@@ -22,6 +22,12 @@ public class TeamController {
         return new ResponseEntity<>(savedTeam, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Team> updateTeam(@PathVariable Long id, @RequestBody Team team) {
+        return new ResponseEntity<>(teamService.updateTeam(id, team), HttpStatus.OK);
+
+    }
+
     @GetMapping
     public ResponseEntity<List<Team>> getAllTeams() {
         return new ResponseEntity<>(teamService.getAllTeams(), HttpStatus.OK);
