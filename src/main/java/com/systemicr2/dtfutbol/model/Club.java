@@ -11,11 +11,15 @@ public class Club {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+    @Column(name = "foundation_year")
     private Integer foundationYear;
+
+    @Column(name = "contact_email", length = 150)
     private String contactEmail;
 
-    // Relación 1:N -> Un Club tiene muchos Equipos (Teams)
     @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
     private List<Team> teams;
 
