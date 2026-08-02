@@ -1,10 +1,14 @@
 package com.systemicr2.dtfutbol.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity // Le dice a Spring Data JPA: "Esta clase es una tabla en la base de datos MySQL"
 @Data   // Le dice a Lombok: "Genera todos los getters, setters y constructores automáticamente por detrás"
@@ -34,8 +38,24 @@ public class Player {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "team_id")
+    @JsonIgnore
 
     private Team team;
+    @ManyToMany
+
+
+    @JoinTable(
+
+            name = "player_training",
+
+            joinColumns = @JoinColumn(name = "player_id"),
+
+            inverseJoinColumns = @JoinColumn(name = "training_id")
+
+    )
+    @JsonIgnore
+
+    private List<TrainingSession> trainingSessions = new ArrayList<>();
 
     // ... getters y setters actualizados
     }

@@ -26,6 +26,13 @@ public class PlayerController {
         return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
     }
 
+    @PostMapping("/{dni}/trainings/{trainingId}")
+    public ResponseEntity<Player> assignTraining(@PathVariable String dni, @PathVariable Long trainingId) {
+        // Llamamos al servicio pasando el String (dni) y el Long (trainingId)
+        Player updatedPlayer = playerService.addTrainingToPlayer(dni, trainingId);
+        return new ResponseEntity<>(updatedPlayer, HttpStatus.OK);
+    }
+
     // READ (Todos)
     @GetMapping
     public ResponseEntity<List<Player>> getAllPlayers() {
@@ -34,10 +41,10 @@ public class PlayerController {
         return new ResponseEntity<>(players, HttpStatus.OK);
     }
 
-    // READ (Por ID)
-    @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayerById(@PathVariable Long id) {
-        return new ResponseEntity<>(playerService.getPlayerById(id), HttpStatus.OK);
+    @GetMapping("/{dni}")
+    public ResponseEntity<com.systemicr2.dtfutbol.dto.PlayerResponseDTO> getPlayer(@PathVariable String dni) {
+        com.systemicr2.dtfutbol.dto.PlayerResponseDTO dto = playerService.getPlayerDTO(dni);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
     @GetMapping("/team/{teamId}")
@@ -47,13 +54,13 @@ public class PlayerController {
 
     // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<Player> updatePlayer(@PathVariable Long id, @RequestBody Player playerDetails) {
+    public ResponseEntity<Player> updatePlayer(@PathVariable String id, @RequestBody Player playerDetails) {
         return new ResponseEntity<>(playerService.updatePlayer(id, playerDetails), HttpStatus.OK);
 
     }
     // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePlayer(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePlayer(@PathVariable String id) {
         playerService.deletePlayer(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT); // 204 No Content
     }
