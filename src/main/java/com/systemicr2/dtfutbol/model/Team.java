@@ -17,6 +17,10 @@ public class Team {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "club_id")
+    private Club club;
+
     private Double budget;
 
 }
