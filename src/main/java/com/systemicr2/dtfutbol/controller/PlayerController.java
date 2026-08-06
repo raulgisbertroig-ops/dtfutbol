@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -19,10 +20,15 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    // CREATE
-    @PostMapping
-    public ResponseEntity<Player> createPlayer(@Valid @RequestBody Player player) {
-        Player savedPlayer = playerService.createPlayer(player);
+    // CREATE PLAYER (Zero Trust Network Layer)
+    @PostMapping("/team/{teamId}")
+    public ResponseEntity<Player> createPlayer(
+            @Valid @RequestBody Player player,
+            @PathVariable Long teamId) {
+
+        // Pasamos ÚNICAMENTE el jugador y el ID del equipo. El servicio se encarga del resto.
+        Player savedPlayer = playerService.createPlayer(player, teamId);
+
         return new ResponseEntity<>(savedPlayer, HttpStatus.CREATED);
     }
 

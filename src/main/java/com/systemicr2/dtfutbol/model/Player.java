@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,8 @@ public class Player {
     @NotBlank(message = "El DNI es obligatorio")
     private String dni;
 
-    @Column(nullable = false)
+    @Column(name = "salary", precision = 10, scale = 2)
+    private BigDecimal salary;
 
     @NotBlank(message = "El nombre no puede estar vacío")
     private String name;
@@ -36,6 +38,9 @@ public class Player {
 
     private Double marketValue;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "team_id")
     @JsonIgnore
@@ -43,18 +48,13 @@ public class Player {
     private Team team;
     @ManyToMany
 
-
     @JoinTable(
-
             name = "player_training",
-
             joinColumns = @JoinColumn(name = "player_id"),
-
             inverseJoinColumns = @JoinColumn(name = "training_id")
-
     )
-    @JsonIgnore
 
+    @JsonIgnore
     private List<TrainingSession> trainingSessions = new ArrayList<>();
 
     // ... getters y setters actualizados
