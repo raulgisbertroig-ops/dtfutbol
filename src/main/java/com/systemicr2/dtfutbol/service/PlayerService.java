@@ -101,15 +101,51 @@ public class PlayerService {
     }
 
     public Player updatePlayer(String id, Player playerDetails) {
-        Player player = getPlayerById(id);
-        player.setName(playerDetails.getName());
-        player.setPosition(playerDetails.getPosition());
-        return playerRepository.save(player);
-    }
 
+        // 1. I/O: Cargamos el estado inmutable desde el disco duro a la RAM.
+        Player existingPlayer = getPlayerById(id);
+
+        // 2. Extraemos el puntero del equipo al que pertenece este jugador.
+        Team officialTeam = existingPlayer.getTeam();
+
+        // 3. Barrera Zero Trust
+        if (officialTeam != null && playerDetails.getSalary() != null) {
+
+            BigDecimal officialBudget = BigDecimal.valueOf(officialTeam.getBudget());
+
+            boolean canAfford = teamFinancialService.canAffordNewPlayer(
+                    officialTeam.getId(),
+                    playerDetails.getSalary(),
+                    officialBudget
+            );
+
+            if (!canAfford) {
+                // CORRECCIÓN: IllegalArgumentException, no IllegalAccessException
+                throw new IllegalArgumentException("Presupuesto insuficiente para esta mutación salarial.");
+            }
+
+            existingPlayer.setSalary(playerDetails.getSalary());
+        } // CIERRE DEL IF CORRECTO
+
+        // 4. Mutamos el resto de variables permitidas en la memoria local.
+        existingPlayer.setName(playerDetails.getName());
+        existingPlayer.setPosition(playerDetails.getPosition());
+
+        // 5. I/O: Sobrescribimos el disco.
+        return playerRepository.save(existingPlayer);
+    } // CIERRE DEL MÉTODO
+
+    // --- DESTRUCCIÓN DE DATOS ---
     public void deletePlayer(String id) {
-        playerRepository.deleteById(id);
+
+        // 1. Verificación de existencia: Reutilizamos tu método interno.
+        // Si no existe, este método ya lanza un RuntimeException controlado.
+        Player playerToDelete = getPlayerById(id);
+
+        // 2. (Punto de anclaje para el futuro): Aquí desvincularemos entrenamientos
+        // o devolveremos su salario al presupuesto del equipo antes de borrarlo.
+
+        // 3. I/O: Destrucción segura del objeto en la base de datos.
+        playerRepository.delete(playerToDelete);
     }
 }
-
-

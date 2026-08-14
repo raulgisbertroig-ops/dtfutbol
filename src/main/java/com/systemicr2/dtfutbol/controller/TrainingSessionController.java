@@ -1,33 +1,48 @@
 package com.systemicr2.dtfutbol.controller;
 
-import com.systemicr2.dtfutbol.model.TrainingSession;
+
 import com.systemicr2.dtfutbol.service.TrainingSessionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.systemicr2.dtfutbol.dto.TrainingRequestDTO;
+import com.systemicr2.dtfutbol.dto.TrainingResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/trainings")
 public class TrainingSessionController {
 
-    // 1. Conexión lógica con la capa de Servicio
-    @Autowired
-    private TrainingSessionService trainingSessionService;
+    // 1. Variable final (Inmutable)
+    private final TrainingSessionService trainingSessionService;
 
-    // 2. mapeo de Mutación (Escritura de BD)
-    @PostMapping
-    public ResponseEntity<TrainingSession> createTrainingSession(@RequestBody TrainingSession trainingSession) {
-        TrainingSession newSession = trainingSessionService.createTrainingSession(trainingSession);
-        return new ResponseEntity<>(newSession, HttpStatus.CREATED); // Devuelve el código 201
+    // 2. Inyector por constructor (obligatorio)
+    public TrainingSessionController(TrainingSessionService trainingSessionService) {
+        this.trainingSessionService = trainingSessionService;
     }
 
-    // 3. Mapeo de Extracción (Lectura de BD)
+    // 3. mapeo de Mutación (Escritura de BD con Validación)
+    @PostMapping
+    public ResponseEntity<TrainingResponseDTO> createTrainingSession(@Valid @RequestBody TrainingRequestDTO requestDTO) {
+        TrainingResponseDTO createdSession = trainingSessionService.createTrainingSession(requestDTO);
+        return new ResponseEntity<>(createdSession, HttpStatus.CREATED);
+    }
+
+    // 4. Mapeo de Extracción (Lectura de BD)
     @GetMapping
-    public ResponseEntity<List<TrainingSession>> getAllTrainingSessions() {
-        List<TrainingSession> sessions = trainingSessionService.getAllTrainingSessions();
-        return new ResponseEntity<>(sessions, HttpStatus.OK); // Devuelve el codigo 200
+    public ResponseEntity<Page<TrainingResponseDTO>> getAllTrainingSessions(
+            @PageableDefault Pageable pageable) {
+
+        Page<TrainingResponseDTO> sessionsPage = trainingSessionService.getAllTrainingSessions(pageable);
+        return new ResponseEntity<>(sessionsPage, HttpStatus.OK);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTrainingSession(@PathVariable Long id) {
+        trainingSessionService.deleteTrainingSession(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
