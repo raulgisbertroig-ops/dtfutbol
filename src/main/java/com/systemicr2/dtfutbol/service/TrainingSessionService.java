@@ -36,7 +36,7 @@ public class TrainingSessionService {
         TrainingSession newSession = new TrainingSession();
         newSession.setDate(requestDTO.date());
         newSession.setDurationMinutes(requestDTO.durationMinutes());
-        newSession.setObjective(requestDTO.Objective());
+        newSession.setObjective(requestDTO.objective());
         newSession.setTeam(realTeam);
 
         // 6. Guardamos con seguridad en MySQL
@@ -57,7 +57,7 @@ public class TrainingSessionService {
 
         // 1. Verificamos que el entrenamiento original existe.
         TrainingSession existingSession = trainingSessionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error: El equipo con ID " + id + " no existe."));
+                .orElseThrow(() -> new RuntimeException("Error: La sesión de entrenamiento con ID " + id + " no existe."));
 
         // 2. Verificamos que el nuevo equipo asignado tambien existe
         Team realTeam = teamRepository.findById(requestDTO.teamId())
@@ -66,7 +66,7 @@ public class TrainingSessionService {
         // 3. Mutuación de estado RAM
         existingSession.setDate(requestDTO.date());
         existingSession.setDurationMinutes(requestDTO.durationMinutes());
-        existingSession.setObjective(requestDTO.Objective());
+        existingSession.setObjective(requestDTO.objective());
         existingSession.setTeam(realTeam);
 
         // 4. Persistencia en disco

@@ -25,7 +25,7 @@ public class TrainingSessionController {
         this.trainingSessionService = trainingSessionService;
     }
 
-    // 3. mapeo de Mutación (Escritura de BD con Validación)
+    // 3. Mapeo de Mutación (Escritura de BD con Validación)
     @PostMapping
     public ResponseEntity<TrainingResponseDTO> createTrainingSession(@Valid @RequestBody TrainingRequestDTO requestDTO) {
         TrainingResponseDTO createdSession = trainingSessionService.createTrainingSession(requestDTO);
@@ -40,6 +40,17 @@ public class TrainingSessionController {
         Page<TrainingResponseDTO> sessionsPage = trainingSessionService.getAllTrainingSessions(pageable);
         return new ResponseEntity<>(sessionsPage, HttpStatus.OK);
     }
+
+    // 5. Mapeo de Actualizacion (Sobrescritura en BD)
+    @PutMapping("/{id}")
+    public ResponseEntity<TrainingResponseDTO> updateTrainingSession(
+            @PathVariable Long id,
+            @Valid @RequestBody TrainingRequestDTO requestDTO) {
+
+        TrainingResponseDTO updatedSession = trainingSessionService.updateTrainingSession(id, requestDTO);
+        return new ResponseEntity<>(updatedSession, HttpStatus.OK);
+    }
+    // 6. Mapeo de Sustracción (Eliminación de BD)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTrainingSession(@PathVariable Long id) {
         trainingSessionService.deleteTrainingSession(id);

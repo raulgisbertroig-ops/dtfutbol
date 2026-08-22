@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record TrainingRequestDTO(
-        @NotNull(message = "Error: La fecha de la sessión no puede serr nula.")
+        @NotNull(message = "Error: La fecha de la sessión no puede ser nula.")
         LocalDate date,
 
         @NotNull(message = "Error: La duración es un campo obligatorio.")
@@ -14,10 +14,11 @@ public record TrainingRequestDTO(
         Integer durationMinutes,
 
         @NotBlank(message = "Error: El objetivo del entrenamiento no puede ser una cadena vacía.")
-        String Objective,
+        String objective,
 
-        @NotNull(message = "Error: El ID del equipo a vincular es estricamente necesario.")
+        @NotNull(message = "Error: El ID del equipo a vincular es estrictamente necesario.")
         Long teamId
 ) {
 }
+
 
