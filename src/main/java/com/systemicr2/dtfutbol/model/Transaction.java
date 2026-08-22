@@ -19,8 +19,40 @@ public class Transaction {
     private Budget budget;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "contract_id", nullable = true) // No todas las transacciones requieren un contrato activo
+    @JoinColumn(name = "contract_id") // No todas las transacciones requieren un contrato activo
     private Contract contract;
 
     // TODO: Implementar relaciones ManytoOne con Budget y Contract
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public Budget getBudget() {
+        return budget;
+    }
+
+    public void setBudget(Budget budget) {
+        this.budget = budget;
+    }
+
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
+    }
 }

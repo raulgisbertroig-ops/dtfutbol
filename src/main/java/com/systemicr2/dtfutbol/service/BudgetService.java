@@ -6,6 +6,9 @@ import com.systemicr2.dtfutbol.model.Budget;
 import com.systemicr2.dtfutbol.repository.BudgetRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class BudgetService {
 
@@ -33,5 +36,17 @@ public class BudgetService {
                 savedBudget.getCategory(),
                 savedBudget.getTotalAmount()
         );
+    }
+
+    // Método de Lectura (Extracción masiva)
+    public List<BudgetResponseDTO> getAllBudgets() {
+        return budgetRepository.findAll()
+                .stream()
+                .map(budget -> new BudgetResponseDTO(
+                        budget.getId(),
+                        budget.getCategory(),
+                        budget.getTotalAmount()
+                ))
+                .collect(Collectors.toList());
     }
 }
