@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Repository
 public interface TeamFinancialRepository extends JpaRepository<Team, Long> {
 
-    @Query("SELECT SUM(p.salary) FROM Player p WHERE p.team.id = :teamId AND p.status = 'ACTIVE'")
+    @Query("SELECT SUM(p.monthlySalary) FROM Player p WHERE p.team.id = :teamId AND p.status = 'ACTIVE'")
     BigDecimal calculateTotalActivePayrollByTeamId(@Param("teamId") Long teamId);
 }
 

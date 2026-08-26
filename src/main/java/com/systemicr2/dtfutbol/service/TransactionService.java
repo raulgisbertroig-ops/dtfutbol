@@ -27,36 +27,33 @@ public class TransactionService {
         Budget linkedBudget = budgetRepository.findById(requestDTO.budgetId())
                 .orElseThrow(() -> new RuntimeException("Presupuesto no encontrado en el sistema."));
 
-        // 1.5. Validación de Lógica de Negocio (Protección contra descubiertos)
-        // Solo verificamos si la transacción es un gasto (amount es negativo)
+        // 2. Cálculo Unificado (aplica a ingresos positivos y gastos negativos)
+        java.math.BigDecimal projectedBalance = linkedBudget.getTotalAmount().add(requestDTO.amount());
+
+        // 3. Validación de Lógica de Negocio (El muro de contención solo para gastos)
         if (requestDTO.amount().compareTo(java.math.BigDecimal.ZERO) < 0) {
-
-            // Calculamos el balance hipotético: Presupuesto Actual + Gasto (que es negativo)
-            java.math.BigDecimal projectedBalance = linkedBudget.getTotalAmount().add(requestDTO.amount());
-
-            // Si el balance proyectado es menor que cero, abortamos la ejecución lanzado la excepción
             if (projectedBalance.compareTo(java.math.BigDecimal.ZERO) < 0) {
                 throw new com.systemicr2.dtfutbol.exception.InsufficientFundsException(
                         "Operación denegada. El fichaje dejaría el presupuesto en descubierto (" + projectedBalance + "€)."
                 );
             }
-
-            // 1.8. Mutación de Estado (Actualizar el Presupuesto)
-            // Sobrescribimos el objeto en RAM y lo persistimos en el disco duro (MySQL)
-            linkedBudget.setTotalAmount(projectedBalance);
-            budgetRepository.save(linkedBudget);
-
         }
 
-        // 2. Mapeo Manuala memoria RAM
+        // 4. Mutación de Estado Universal (Actualiza RAM y DiscoDuro siempre)
+        linkedBudget.setTotalAmount(projectedBalance);
+        budgetRepository.save(linkedBudget);
+
+        // 5. Mapeo Manual a memoria RAM
         Transaction newTransaction = new Transaction();
         newTransaction.setAmount(requestDTO.amount());
-        newTransaction.setBudget(linkedBudget); // Inyectamos el objeto completo
+        newTransaction.setType(requestDTO.type());
+        newTransaction.setDescription(requestDTO.description());
+        newTransaction.setBudget(linkedBudget);
 
-        // 3. Persistencia
+        // 6. Persistencia
         Transaction savedTransaction = transactionRepository.save(newTransaction);
 
-        // 4. Retorno de la red
+        // 7. Retorno de la red
         return new TransactionResponseDTO(
                 savedTransaction.getId(),
                 savedTransaction.getAmount(),
@@ -64,3 +61,8 @@ public class TransactionService {
         );
     }
 }
+
+
+
+
+

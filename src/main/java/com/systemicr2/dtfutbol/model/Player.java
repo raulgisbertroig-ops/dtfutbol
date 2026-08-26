@@ -1,7 +1,6 @@
 package com.systemicr2.dtfutbol.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -23,7 +22,7 @@ public class Player {
     private String dni;
 
     @Column(name = "salary", precision = 10, scale = 2)
-    private BigDecimal salary;
+    private BigDecimal monthlySalary;
 
     @NotBlank(message = "El nombre no puede estar vacío")
     private String name;
@@ -31,7 +30,7 @@ public class Player {
     @NotBlank(message = "La posición es obligatoria")
     private String position;
 
-    @Min(value=1, message="Camiseta > 0")
+    @Min(value = 1, message = "Camiseta > 0")
     private Integer shirtNumber;
 
     // ... tus otros campos (id, name, position, etc)
@@ -56,6 +55,6 @@ public class Player {
 
     @JsonIgnore
     private List<TrainingSession> trainingSessions = new ArrayList<>();
-
+}
     // ... getters y setters actualizados
-    }
+

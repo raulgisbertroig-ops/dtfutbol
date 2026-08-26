@@ -3,7 +3,6 @@ package com.systemicr2.dtfutbol.controller;
 import com.systemicr2.dtfutbol.model.Team;
 import com.systemicr2.dtfutbol.service.TeamService;
 import com.systemicr2.dtfutbol.service.TeamFinancialService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

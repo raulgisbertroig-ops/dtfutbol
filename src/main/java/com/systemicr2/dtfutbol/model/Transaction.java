@@ -14,6 +14,20 @@ public class Transaction {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
+    @Column(name = "type", nullable = false)
+    private String type;
+
+    @Column(name = "description")
+    private String description;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "budget_id", nullable = false)
     private Budget budget;
@@ -54,5 +68,8 @@ public class Transaction {
 
     public void setContract(Contract contract) {
         this.contract = contract;
+    }
+
+    public void setDescription(String description) {
     }
 }

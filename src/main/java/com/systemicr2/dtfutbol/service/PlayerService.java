@@ -58,7 +58,7 @@ public class PlayerService {
         BigDecimal officialBudget = BigDecimal.valueOf(officialTeam.getBudget());
 
         // AQUI ESTABA EL ERROR BOOLEANO. Llamamos al servicio financiero.
-        boolean canAfford = teamFinancialService.canAffordNewPlayer(teamId, player.getSalary(), officialBudget);
+        boolean canAfford = teamFinancialService.canAffordNewPlayer(teamId, player.getMonthlySalary(), officialBudget);
 
         if (!canAfford) {
             throw new IllegalArgumentException("Presupuesto insuficiente para este fichaje. Operación denegada.");
@@ -109,13 +109,13 @@ public class PlayerService {
         Team officialTeam = existingPlayer.getTeam();
 
         // 3. Barrera Zero Trust
-        if (officialTeam != null && playerDetails.getSalary() != null) {
+        if (officialTeam != null && playerDetails.getMonthlySalary() != null) {
 
             BigDecimal officialBudget = BigDecimal.valueOf(officialTeam.getBudget());
 
             boolean canAfford = teamFinancialService.canAffordNewPlayer(
                     officialTeam.getId(),
-                    playerDetails.getSalary(),
+                    playerDetails.getMonthlySalary(),
                     officialBudget
             );
 
@@ -124,7 +124,7 @@ public class PlayerService {
                 throw new IllegalArgumentException("Presupuesto insuficiente para esta mutación salarial.");
             }
 
-            existingPlayer.setSalary(playerDetails.getSalary());
+            existingPlayer.setMonthlySalary(playerDetails.getMonthlySalary());
         } // CIERRE DEL IF CORRECTO
 
         // 4. Mutamos el resto de variables permitidas en la memoria local.
