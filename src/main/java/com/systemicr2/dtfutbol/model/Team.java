@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @Table(name = "teams")
@@ -21,6 +23,7 @@ public class Team {
     @JoinColumn(name = "club_id")
     private Club club;
 
-    private Double budget;
+    private BigDecimal currentWageBill;
+    private BigDecimal budget;
 
 }

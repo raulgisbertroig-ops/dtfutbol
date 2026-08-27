@@ -7,12 +7,14 @@ import com.systemicr2.dtfutbol.model.TrainingSession;
 import com.systemicr2.dtfutbol.repository.PlayerRepository;
 import com.systemicr2.dtfutbol.repository.TrainingSessionRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PlayerService {
 
     // 1. Punteros Inmutables (Reemplazando los antiguos @Autowired)
@@ -21,17 +23,9 @@ public class PlayerService {
     private final TeamFinancialService teamFinancialService;
     private final TeamRepository teamRepository;
 
+    // inyectamos nuestro firewall financiero de negocio
+    private final FairPlayValidationService fairPlayValidationService;
 
-    // 2. Inyección de dependencias por Constructor (El estandar de la industria)
-    public PlayerService(PlayerRepository playerRepository,
-                         TrainingSessionRepository trainingRepository, // Parámetro de entrada
-                         TeamFinancialService teamFinancialService,
-                         TeamRepository teamRepository) {
-        this.playerRepository = playerRepository;
-        this.trainingSessionRepository = trainingRepository; // Asignación corregida
-        this.teamFinancialService = teamFinancialService;
-        this.teamRepository = teamRepository;
-    }
 
     // --- METODOS DE NEGOCIO ---
 
@@ -51,22 +45,23 @@ public class PlayerService {
     }
 
     // NUEVO: Motor de creación con barrera financiera (Patrón Fail-Fast)
+    @Transactional
     public Player createPlayer(Player player, Long teamId) {
+        // 1. FIREWALL FFP (Capa de Negocio)
+        // Llamamos al nuevo validador. Si falla, escupe la excepción SalaryCapExceededException
+        // y el hilo se aborta de inmediato.Cero impacto en DB
+        fairPlayValidationService.validateTransfer(teamId, player.getMonthlySalary());
+
+        // 2. I/O DE BASE DE DATOS (Capa de Persistencia)
+        // Si la CPU llega aquí, el fichaje es viable financieramente.
         Team officialTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("El equipo con ID " + teamId + " no existe"));
 
-        BigDecimal officialBudget = BigDecimal.valueOf(officialTeam.getBudget());
-
-        // AQUI ESTABA EL ERROR BOOLEANO. Llamamos al servicio financiero.
-        boolean canAfford = teamFinancialService.canAffordNewPlayer(teamId, player.getMonthlySalary(), officialBudget);
-
-        if (!canAfford) {
-            throw new IllegalArgumentException("Presupuesto insuficiente para este fichaje. Operación denegada.");
-        }
-
+        // 3. ESCRITURA
         player.setTeam(officialTeam);
         return playerRepository.save(player);
-    } // <-- ÚNICA LLAVE DE CIERRE. Borra la llave extra que tenías debajo de esta.
+    }
+
 
     // --- A partir de aquí deben seguir tus otros métodos (getAllPlayers, etc.) ---
 
@@ -100,6 +95,7 @@ public class PlayerService {
         return dto;
     }
 
+
     public Player updatePlayer(String id, Player playerDetails) {
 
         // 1. I/O: Cargamos el estado inmutable desde el disco duro a la RAM.
@@ -111,7 +107,7 @@ public class PlayerService {
         // 3. Barrera Zero Trust
         if (officialTeam != null && playerDetails.getMonthlySalary() != null) {
 
-            BigDecimal officialBudget = BigDecimal.valueOf(officialTeam.getBudget());
+            BigDecimal officialBudget = officialTeam.getBudget();
 
             boolean canAfford = teamFinancialService.canAffordNewPlayer(
                     officialTeam.getId(),
@@ -149,3 +145,5 @@ public class PlayerService {
         playerRepository.delete(playerToDelete);
     }
 }
+
+

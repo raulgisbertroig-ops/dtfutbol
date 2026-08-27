@@ -1,20 +1,20 @@
-package com.systemicr2.dtfutbol.exception.GlobalExceptionHandler;
+package com.systemicr2.dtfutbol.exception;
 
 
-import com.systemicr2.dtfutbol.exception.InsufficientFundsException;
+import com.systemicr2.dtfutbol.dto.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
 
@@ -62,5 +62,14 @@ public class GlobalExceptionHandler {
 
         // Retornamos HTTP 409 Conflict hacia la capa de red
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(SalaryCapExceededException.class)
+    public ResponseEntity<ApiErrorResponse> handleSalaryCapExceededException(SalaryCapExceededException ex) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                422,
+                ex.getMessage()
+        );
+        return ResponseEntity.status(422).body(response);
     }
 }
