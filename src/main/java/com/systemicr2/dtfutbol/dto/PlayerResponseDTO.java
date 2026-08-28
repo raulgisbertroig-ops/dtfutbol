@@ -14,4 +14,10 @@ public class PlayerResponseDTO {
 
     public List<String> trainingObjectives;
 
+    public Integer matchesPlayed;
+
+    public Integer goalsScored;
+
+    public Integer assists;
+
 }

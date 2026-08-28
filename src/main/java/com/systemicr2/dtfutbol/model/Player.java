@@ -55,6 +55,11 @@ public class Player {
 
     @JsonIgnore
     private List<TrainingSession> trainingSessions = new ArrayList<>();
+
+    // --- ESTADISTICAS (MVP) ---
+    private Integer matchesPlayed = 0; // Valor por defeccto 0 al crear el jugador
+    private Integer goalsScored = 0;
+    private Integer assists = 0;
 }
     // ... getters y setters actualizados
 

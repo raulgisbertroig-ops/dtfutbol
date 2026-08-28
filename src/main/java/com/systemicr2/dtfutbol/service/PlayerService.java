@@ -92,6 +92,15 @@ public class PlayerService {
                 .map(TrainingSession::getObjective)
                 .toList();
 
+        dto.matchesPlayed = player.getMatchesPlayed();
+        dto.goalsScored = player.getGoalsScored();
+        dto.assists = player.getAssists();
+
+        // Aplicamos Zero Trust para proteger los registros antiguos (Legacy Data)
+        dto.matchesPlayed = player.getMatchesPlayed() != null ? player.getMatchesPlayed() : 0;
+        dto.goalsScored = player.getGoalsScored() != null ? player.getGoalsScored() : 0;
+        dto.assists = player.getAssists() != null ? player.getAssists() : 0;
+
         return dto;
     }
 
