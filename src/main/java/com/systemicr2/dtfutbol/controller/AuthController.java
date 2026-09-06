@@ -2,11 +2,14 @@ package com.systemicr2.dtfutbol.controller;
 
 import com.systemicr2.dtfutbol.dto.AuthRequestDTO;
 import com.systemicr2.dtfutbol.dto.AuthResponseDTO;
+import com.systemicr2.dtfutbol.model.AppUser;
+import com.systemicr2.dtfutbol.repository.AppUserRepository;
 import com.systemicr2.dtfutbol.util.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +23,19 @@ public class AuthController {
     // para procesar el login en el siguiente paso.
 
     private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwUtil;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
+    private final AppUserRepository userRepository; // Ojo: usa el nombre exacto de tu interfaz de repositorio aquí
 
-    // Inyectamos por constructor las dos herramientas clave
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwUtil) {
+    // Inyectamos todas las herramientas en el constructor
+    public AuthController(AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil,
+                          PasswordEncoder passwordEncoder,
+                          AppUserRepository userRepository) {
         this.authenticationManager = authenticationManager;
-        this.jwUtil = jwUtil;
+        this.jwtUtil = jwtUtil;
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/login")
@@ -40,9 +50,20 @@ public class AuthController {
 
         // 2. FABRICACIÓN DEL TOKEN
         // Si el paso anterior tuvo éxito, generamos el token JWT con su nombre de usuario.
-        String token = jwUtil.generateToken(request.getUsername());
+        String token = jwtUtil.generateToken(request.getUsername());
 
         // 3. RESPUESTA HTTP 200 OK con el Token dentro de la "caja" AuthResnponseDTO
         return ResponseEntity.ok(new AuthResponseDTO(token));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody AuthRequestDTO request) {
+        AppUser newUser = new AppUser();
+        newUser.setUsername(request.getUsername());
+        // VITAL: Encrypt the password before saving it to the database
+        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        userRepository.save(newUser);
+        return ResponseEntity.ok("User registered successfully");
     }
 }

@@ -30,7 +30,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 
         // 1. Desactivamos CSRF. Como somos una API REST y no una página web tradicional con formularios HTML, no necesitamos esta protección.
         http.csrf(csrf -> csrf.disable())

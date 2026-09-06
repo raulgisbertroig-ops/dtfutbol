@@ -35,6 +35,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // 3. Buscamos la cabecera "Authorizadción" en la petición que esta entrando
         final String authorizationHeader = request.getHeader("Authorization");
+        System.out.println(">>> CABECERA EXACTA RECIBIDA: {" + authorizationHeader + "]");
 
         String username = null;
 
