@@ -1,6 +1,4 @@
 package com.systemicr2.dtfutbol.exception;
-
-
 import com.systemicr2.dtfutbol.dto.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +11,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
@@ -25,7 +21,6 @@ public class GlobalExceptionHandler {
         response.put("message", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
 
@@ -43,7 +38,6 @@ public class GlobalExceptionHandler {
 
             // RAM: Extrae el mensaje de texto (ej. "No puede estar vacío") y lo guarda en memoria temporal.
             String errorMessage = error.getDefaultMessage();
-
             // DISCO/RAM: Insertamos ambos datos en nuestro HashMap.
             errors.put(fieldName, errorMessage);
         });
@@ -51,25 +45,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    // Intercepta la excepción personalizada lanzada por el Service cuando falta presupuesto
-    @ExceptionHandler(InsufficientFundsException.class)
-    public ResponseEntity<Map<String, String>> handleInsufficientFunds(InsufficientFundsException ex) {
-
-        // Estructuramos el Payload de respuesta en la RAM
-        Map<String, String> response = new HashMap<>();
-        response.put("error", "Conflicto Financiero (Regla de Negocio)");
-        response.put("message", ex.getMessage());
-
-        // Retornamos HTTP 409 Conflict hacia la capa de red
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(SalaryCapExceededException.class)
-    public ResponseEntity<ApiErrorResponse> handleSalaryCapExceededException(SalaryCapExceededException ex) {
-        ApiErrorResponse response = new ApiErrorResponse(
-                422,
-                ex.getMessage()
-        );
-        return ResponseEntity.status(422).body(response);
-    }
 }

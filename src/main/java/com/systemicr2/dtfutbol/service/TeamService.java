@@ -34,7 +34,8 @@ public class TeamService {
 
     public Team updateTeam(Long id, Team teamDetails) {
         Team team = teamRepository.findById(id).orElseThrow();
-        team.setBudget(teamDetails.getBudget());
+        team.setName(teamDetails.getName());
+
         return teamRepository.save(team);
 
     }

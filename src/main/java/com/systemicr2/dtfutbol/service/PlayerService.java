@@ -20,11 +20,7 @@ public class PlayerService {
     // 1. Punteros Inmutables (Reemplazando los antiguos @Autowired)
     private final PlayerRepository playerRepository;
     private final TrainingSessionRepository trainingSessionRepository;
-    private final TeamFinancialService teamFinancialService;
     private final TeamRepository teamRepository;
-
-    // inyectamos nuestro firewall financiero de negocio
-    private final FairPlayValidationService fairPlayValidationService;
 
 
     // --- METODOS DE NEGOCIO ---
@@ -50,7 +46,6 @@ public class PlayerService {
         // 1. FIREWALL FFP (Capa de Negocio)
         // Llamamos al nuevo validador. Si falla, escupe la excepción SalaryCapExceededException
         // y el hilo se aborta de inmediato.Cero impacto en DB
-        fairPlayValidationService.validateTransfer(teamId, player.getMonthlySalary());
 
         // 2. I/O DE BASE DE DATOS (Capa de Persistencia)
         // Si la CPU llega aquí, el fichaje es viable financieramente.
@@ -110,35 +105,15 @@ public class PlayerService {
         // 1. I/O: Cargamos el estado inmutable desde el disco duro a la RAM.
         Player existingPlayer = getPlayerById(id);
 
-        // 2. Extraemos el puntero del equipo al que pertenece este jugador.
-        Team officialTeam = existingPlayer.getTeam();
-
-        // 3. Barrera Zero Trust
-        if (officialTeam != null && playerDetails.getMonthlySalary() != null) {
-
-            BigDecimal officialBudget = officialTeam.getBudget();
-
-            boolean canAfford = teamFinancialService.canAffordNewPlayer(
-                    officialTeam.getId(),
-                    playerDetails.getMonthlySalary(),
-                    officialBudget
-            );
-
-            if (!canAfford) {
-                // CORRECCIÓN: IllegalArgumentException, no IllegalAccessException
-                throw new IllegalArgumentException("Presupuesto insuficiente para esta mutación salarial.");
-            }
-
-            existingPlayer.setMonthlySalary(playerDetails.getMonthlySalary());
-        } // CIERRE DEL IF CORRECTO
-
-        // 4. Mutamos el resto de variables permitidas en la memoria local.
+        // 2. Mutamos las variables permitidas en la memoria local.
         existingPlayer.setName(playerDetails.getName());
         existingPlayer.setPosition(playerDetails.getPosition());
+        // existingPlayer.setMonthlySalary(playerDetails.getMonthlySalary());
+        // Descomentar si aún quieres guardar el salario como dato informativo.
 
-        // 5. I/O: Sobrescribimos el disco.
+        // 3.I/O: Sobreescribimos el disco.
         return playerRepository.save(existingPlayer);
-    } // CIERRE DEL MÉTODO
+    }
 
     // --- DESTRUCCIÓN DE DATOS ---
     public void deletePlayer(String id) {
