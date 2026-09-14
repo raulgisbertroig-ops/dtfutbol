@@ -37,7 +37,7 @@ public class SecurityConfig {
 
                 // 2. Configuramos las reglas de acceso a las rutas
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()      // Abrimos la ruta de auth (Solo dejamos público el login)
+                        .requestMatchers("/api/auth/**", "/error").permitAll()      // Abrimos la ruta de auth (Solo dejamos público el login)
                         .anyRequest().authenticated()                              // REGLA GENERAL: Cualquier otra ruta requiere contraseña (Todo lo demás incluido /api/players requiere token)
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS));

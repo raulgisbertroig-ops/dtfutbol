@@ -1,11 +1,9 @@
 package com.systemicr2.dtfutbol.config;
 
-import com.systemicr2.dtfutbol.model.AppUser;
-import com.systemicr2.dtfutbol.repository.AppUserRepository;
-import com.systemicr2.dtfutbol.model.CategoryRule;
+import com.systemicr2.dtfutbol.model.*;
+import com.systemicr2.dtfutbol.repository.*;
 import com.systemicr2.dtfutbol.model.enums.CategoryLevel;
 import com.systemicr2.dtfutbol.model.enums.Modality;
-import com.systemicr2.dtfutbol.repository.CategoryRuleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +18,9 @@ public class DataInitializer implements CommandLineRunner {
     private final CategoryRuleRepository categoryRuleRepository;
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TeamRepository teamRepository;
+    private final MatchRepository matchRepository;
+    private final PlayerRepository playerRepository;
 
     @Override
     public void run(String... args) {
@@ -58,6 +59,38 @@ public class DataInitializer implements CommandLineRunner {
             categoryRuleRepository.saveAll(List.of(defaultRule, youthRule));
 
             System.out.println("DataInitializer: category rules inyectadas por defecto.");
+
+            // 3. Inyectar Equipos, Partido y Jugador para pruebas de Postman
+            if (matchRepository.count() == 0) {
+                // Recuperamos la categoría "Amistoso Standard F11" que acabas de crear arriba
+                CategoryRule rule = categoryRuleRepository.findAll().get(0);
+
+                Team home = new Team();
+                home.setName("Real Madrid CF");
+                home.setCategoryRule(rule);
+                teamRepository.save(home);
+
+                Team away = new Team();
+                away.setName("Rayo Vallecano FC");
+                away.setCategoryRule(rule);
+                teamRepository.save(away);
+
+                Match match = new Match();
+                match.setMatchDate(java.time.LocalDateTime.of(2026, 9, 15, 10, 0));
+                match.setHomeTeam(home);
+                match.setAwayTeam(away);
+                match.setCategoryRule(rule);
+                matchRepository.save(match);
+
+                Player player = new Player();
+                player.setDni("99999999Z");
+                player.setName("Jugador Prueba");
+                player.setPosition("DELANTERO");
+                player.setStatus("ACTIVE");
+                playerRepository.save(player);
+
+                System.out.println("✅ Partido (ID 1) y Jugador (99999999Z) inyectados con éxito.");
+            }
         }
     }
 }
