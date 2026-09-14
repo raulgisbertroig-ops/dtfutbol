@@ -4,6 +4,8 @@ import com.systemicr2.dtfutbol.model.*;
 import com.systemicr2.dtfutbol.repository.*;
 import com.systemicr2.dtfutbol.model.enums.CategoryLevel;
 import com.systemicr2.dtfutbol.model.enums.Modality;
+import com.systemicr2.dtfutbol.repository.MatchEventRepository;
+import com.systemicr2.dtfutbol.service.PlayerStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +23,8 @@ public class DataInitializer implements CommandLineRunner {
     private final TeamRepository teamRepository;
     private final MatchRepository matchRepository;
     private final PlayerRepository playerRepository;
+    private final MatchEventRepository matchEventRepository;
+    private final PlayerStatsService playerStatsService;
 
     @Override
     public void run(String... args) {
