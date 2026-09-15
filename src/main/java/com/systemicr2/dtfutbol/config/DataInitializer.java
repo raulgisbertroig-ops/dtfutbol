@@ -1,11 +1,13 @@
 package com.systemicr2.dtfutbol.config;
 
 import com.systemicr2.dtfutbol.model.*;
+import com.systemicr2.dtfutbol.model.enums.AttendanceStatus;
 import com.systemicr2.dtfutbol.repository.*;
 import com.systemicr2.dtfutbol.model.enums.CategoryLevel;
 import com.systemicr2.dtfutbol.model.enums.Modality;
 import com.systemicr2.dtfutbol.repository.MatchEventRepository;
 import com.systemicr2.dtfutbol.service.PlayerStatsService;
+import com.systemicr2.dtfutbol.service.TrainingAttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,8 @@ public class DataInitializer implements CommandLineRunner {
     private final PlayerRepository playerRepository;
     private final MatchEventRepository matchEventRepository;
     private final PlayerStatsService playerStatsService;
+    private final TrainingSessionRepository trainingSessionRepository;
+    private final TrainingAttendanceService trainingAttendanceService;
 
     @Override
     public void run(String... args) {
@@ -67,7 +71,7 @@ public class DataInitializer implements CommandLineRunner {
             // 3. Inyectar Equipos, Partido y Jugador para pruebas de Postman
             if (matchRepository.count() == 0) {
                 // Recuperamos la categoría "Amistoso Standard F11" que acabas de crear arriba
-                CategoryRule rule = categoryRuleRepository.findAll().get(0);
+                CategoryRule rule = categoryRuleRepository.findAll().getFirst();
 
                 Team home = new Team();
                 home.setName("Real Madrid CF");
@@ -95,6 +99,21 @@ public class DataInitializer implements CommandLineRunner {
 
                 System.out.println("✅ Partido (ID 1) y Jugador (99999999Z) inyectados con éxito.");
             }
+
+            // 4. Test Training Attendance (Tasl-57)
+            Player firstPlayer = playerRepository.findAll().getFirst();
+
+            TrainingSession testSession = new TrainingSession();
+            // If your TrainingSession requires a date or name, add it here!
+            // testSession.setDate(java.time.LocalDate.now());
+            trainingSessionRepository.save(testSession);
+
+            trainingAttendanceService.markAttendance(
+                    testSession,
+                    firstPlayer,
+                    com.systemicr2.dtfutbol.model.enums.AttendanceStatus.PRESENT,
+                    "Great effort in the possession drills"
+            );
         }
     }
 }
