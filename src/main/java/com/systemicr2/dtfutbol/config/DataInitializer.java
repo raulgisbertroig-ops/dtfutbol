@@ -103,8 +103,11 @@ public class DataInitializer implements CommandLineRunner {
             // 4. Test Training Attendance (Tasl-57)
             Player firstPlayer = playerRepository.findAll().getFirst();
 
+            com.systemicr2.dtfutbol.model.Team firstTeam = teamRepository.findAll().getFirst();
+
             TrainingSession testSession = new TrainingSession();
             // If your TrainingSession requires a date or name, add it here!
+            testSession.setTeam(firstTeam);
             // testSession.setDate(java.time.LocalDate.now());
             trainingSessionRepository.save(testSession);
 
@@ -114,6 +117,8 @@ public class DataInitializer implements CommandLineRunner {
                     com.systemicr2.dtfutbol.model.enums.AttendanceStatus.PRESENT,
                     "Great effort in the possession drills"
             );
+
+            System.out.println("✅  Attendance saved! Player " + firstPlayer.getName() + " is " + " was marked as PRESENT.");
         }
     }
 }

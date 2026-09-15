@@ -32,8 +32,13 @@ public class Match {
     @Column(nullable = false)
     private LocalDateTime matchDate;
 
+    @Column(name = "home_goals")
+    private Integer homeGoals;
+
+    @Column(name = "away_goals")
+    private Integer awayGoals;
+
     // Propagación para evitar huérfanos
-    // @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
     // private java.util.List<MatchEvent> events;
 
     // Relación bidireccional: Un partido tiene una lista de convocatorias
