@@ -27,7 +27,7 @@ public class TrainingSession {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
     private Team team;
 
     // Spring Boot necesita un constructor vacío por defecto para instanciar la clase en memoria.

@@ -1,6 +1,7 @@
 package com.systemicr2.dtfutbol.controller;
 
 
+import com.systemicr2.dtfutbol.service.TrainingAttendanceService;
 import com.systemicr2.dtfutbol.service.TrainingSessionService;
 import com.systemicr2.dtfutbol.dto.TrainingRequestDTO;
 import com.systemicr2.dtfutbol.dto.TrainingResponseDTO;
@@ -19,10 +20,13 @@ public class TrainingSessionController {
 
     // 1. Variable final (Inmutable)
     private final TrainingSessionService trainingSessionService;
+    private final TrainingAttendanceService trainingAttendanceService;
 
     // 2. Inyector por constructor (obligatorio)
-    public TrainingSessionController(TrainingSessionService trainingSessionService) {
+    public TrainingSessionController(TrainingSessionService trainingSessionService,
+                                     TrainingAttendanceService trainingAttendanceService) {
         this.trainingSessionService = trainingSessionService;
+        this.trainingAttendanceService = trainingAttendanceService;
     }
 
     // 3. Mapeo de Mutación (Escritura de BD con Validación)
@@ -55,5 +59,11 @@ public class TrainingSessionController {
     public ResponseEntity<Void> deleteTrainingSession(@PathVariable Long id) {
         trainingSessionService.deleteTrainingSession(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+    // 7. Mapeo de Asistencia (T-59)
+    @GetMapping("/attendance")
+    public ResponseEntity<?> getTrainingAttendance() {
+        var stats = trainingAttendanceService.getAllAttendance();
+        return ResponseEntity.ok(stats);
     }
 }

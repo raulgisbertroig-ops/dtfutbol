@@ -47,6 +47,7 @@ public class Player {
     private Team team;
 
     // Historial de convocatorias del jugador
+    @JsonIgnore
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<Callup> callups;
 

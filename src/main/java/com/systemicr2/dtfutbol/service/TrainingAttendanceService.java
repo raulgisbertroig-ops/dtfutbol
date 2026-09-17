@@ -8,6 +8,8 @@ import com.systemicr2.dtfutbol.repository.TrainingAttendanceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class TrainingAttendanceService {
@@ -23,6 +25,9 @@ public class TrainingAttendanceService {
         record.setNotes(notes);
 
         return attendanceRepository.save(record);
+    }
+    public List<TrainingAttendance> getAllAttendance() {
+        return attendanceRepository.findAll();
     }
 }
 

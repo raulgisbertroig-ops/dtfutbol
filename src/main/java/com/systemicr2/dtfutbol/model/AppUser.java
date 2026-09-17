@@ -23,4 +23,9 @@ public class AppUser {
 
     @Column(nullable = false)
     private String role = "ROLE_COACH"; // Por defecto, todos serán entrenadores
+
+    // Relación T-60: Aislamiento de datos por equipo
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
 }

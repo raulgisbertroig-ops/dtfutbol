@@ -21,6 +21,7 @@ public class PlayerService {
     private final PlayerRepository playerRepository;
     private final TrainingSessionRepository trainingSessionRepository;
     private final TeamRepository teamRepository;
+    private final SecurityValidationService securityValidationService;
 
 
     // --- METODOS DE NEGOCIO ---
@@ -40,15 +41,17 @@ public class PlayerService {
         return playerRepository.save(player);
     }
 
-    // NUEVO: Motor de creación con barrera financiera (Patrón Fail-Fast)
+    // NUEVO: Motor de creación con barrera financiera y de segfuridad (Patrón Fail-Fast)
     @Transactional
     public Player createPlayer(Player player, Long teamId) {
+        // 0. BARRERA DE SEGURIDAD t-60 (Aislamiento de Datos)
+        // Si raul.coach intenta meter un jugador en un teamId que no es el suyo, lanza 403 y muere aquí.
+        securityValidationService.validateTeamOwnership(teamId);
+
         // 1. FIREWALL FFP (Capa de Negocio)
-        // Llamamos al nuevo validador. Si falla, escupe la excepción SalaryCapExceededException
-        // y el hilo se aborta de inmediato.Cero impacto en DB
+        // Llamamos al nuevo validador. Si falla, escupe la excepción...
 
         // 2. I/O DE BASE DE DATOS (Capa de Persistencia)
-        // Si la CPU llega aquí, el fichaje es viable financieramente.
         Team officialTeam = teamRepository.findById(teamId)
                 .orElseThrow(() -> new IllegalArgumentException("El equipo con ID " + teamId + " no existe"));
 

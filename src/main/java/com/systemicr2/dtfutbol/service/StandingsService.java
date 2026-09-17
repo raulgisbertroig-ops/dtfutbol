@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
-public class StandingService {
+public class StandingsService {
 
     private final TeamRepository teamRepository;
     private final MatchRepository matchRepository;
